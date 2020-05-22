@@ -5,6 +5,7 @@ from sqlalchemy import *
 from openaq import parse_records
 import itertools
 from dotenv import load_dotenv
+import os
 
 
 
