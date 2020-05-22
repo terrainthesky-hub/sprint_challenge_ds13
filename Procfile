@@ -1,1 +1,1 @@
-web: gunicorn "sprint_challenge:create_app()"
+web: gunicorn run:server

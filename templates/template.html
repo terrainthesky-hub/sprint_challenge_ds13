@@ -10,9 +10,13 @@
 
     <!-- SITE NAVIGATION -->
     
+     {% for cp in cpl %}
+<p>       {{ cp }} </p>
+         {% endfor %}
       <!-- PAGE CONTENTS -->
       <div id="content">
         {% block content %}
+
         {% endblock %}
       </div>
 

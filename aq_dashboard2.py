@@ -1,7 +1,10 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 from openaq import OpenAQ
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import *
+from openaq import parse_records
+import itertools
+
 
 
 APP = Flask(__name__)
@@ -19,9 +22,10 @@ for x in range(1, 50):
     list2.append(body['results'][x]['value'])
 
 
+tuplelist = zip(list1, list2)
+
 APP.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 DB = SQLAlchemy(APP)
-
 
 
 class Record(DB.Model):
@@ -29,31 +33,24 @@ class Record(DB.Model):
     datetime = DB.Column(DB.String(25))
     value = DB.Column(DB.Float, nullable=False)
 
-    def __init__(self, datetime, value):
-        self.datetime = datetime
-        self.value = value
-
     def __repr__(self):
-        utc_records = self.Record.query.all()
-        return utc_records
+        return '(Datetime: %s, Value: %s)' % (self.datetime, self.value)
 
 
-@APP.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
-        model.save()
-        # Failure to return a redirect or render_template
-    else:
-        return render_template('template.html')
+@APP.route('/', methods = ['GET','POST'])
+def output():
 
-@APP.route('/')
-def root():
+    newArray = []
+    newArray = [tuplelist]
+    cpl = list(itertools.product(*[i for i in newArray if i != []]))
+    return render_template('template.html', cpl=cpl)
+
+@APP.route('/records.json', methods = ['GET', 'POST'])
+def record_displayer():
     condition = (Record.value >= 10)
-    records = Record.query.filter(condition).all()
-    print(records)
-    return records
-
-
+    displays = Record.query.filter(condition).all()
+    displays = parse_records(displays)
+    return jsonify(displays)
 
 
 @APP.route('/refresh', methods=['GET', 'POST'])
@@ -61,25 +58,8 @@ def refresh():
     """Pull fresh data from Open AQ and replace existing data."""
     DB.drop_all()
     DB.create_all()
-    # TODO Get data from OpenAQ, make Reupdacord objects with it, and add to db
-    # utc1 = Record(datetime = list1[0], value = list2[0])
-    # utc2 = Record(datetime = list1[1], value = list2[1])
-    # utc3 = Record(datetime = list1[2], value = list2[2])
-    # utc4 = Record(datetime = list1[3], value = list2[3])
-    # utc5 = Record(datetime = list1[4], value = list2[4])
-    # utc6 = Record(datetime = list1[5], value = list2[5])
-    # utc7 = Record(datetime = list1[16], value = list2[6])
-    # DB.session.add(utc1)
-    # DB.session.add(utc2)
-    # DB.session.add(utc3)
-    # DB.session.add(utc4)
-    # DB.session.add(utc5)
-    # DB.session.add(utc6)
-    # DB.session.add(utc7)
     for x in range(1, 49):
         utc = Record(datetime = list1[x], value = list2[x])
         DB.session.add(utc)
     DB.session.commit()
     return 'Data refreshed!'
-
-breakpoint()
