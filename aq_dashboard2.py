@@ -4,8 +4,13 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import *
 from openaq import parse_records
 import itertools
+from dotenv import load_dotenv
 
 
+
+load_dotenv()
+
+DATABASE_URI = os.getenv("DATABASE_URL")
 
 APP = Flask(__name__)
 
