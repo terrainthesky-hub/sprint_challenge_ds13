@@ -13,6 +13,11 @@ py-openaq = "*"
 pandas = "*"
 seaborn = "*"
 matplotlib = "*"
+gunicorn = "*"
+tweepy = "*"
+python-dotenv = "*"
+psycopg2-binary = "*"
+flask-migrate = "*"
 
 [requires]
 python_version = "3.7"
