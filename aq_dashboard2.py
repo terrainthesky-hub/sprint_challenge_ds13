@@ -6,6 +6,7 @@ from openaq import parse_records
 import itertools
 from dotenv import load_dotenv
 import os
+from flask_migrate import Migrate
 
 
 
@@ -32,6 +33,7 @@ tuplelist = zip(list1, list2)
 
 APP.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 DB = SQLAlchemy(APP)
+migrate = Migrate()
 
 
 class Record(DB.Model):
